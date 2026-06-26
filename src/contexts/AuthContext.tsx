@@ -74,5 +74,5 @@ export function AuthProvider({ children }: AuthProviderProps){
 
 export function useAuth(){
     const contect = useContext(AuthContext);
-    return contect
+    return contect;
 }
