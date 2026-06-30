@@ -1,78 +1,70 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { api } from "../services/api";
-
-interface User {
-    sub: string;
-    email: string;
-}
-
-interface AuthContextData {
-    user: User | null;
-    isAuthenticated: boolean;
-    signIn: (email: string, password: string) => Promise<void>;
-    signOut: () => void;
-}
+import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
+import type { AuthContextData, User } from "../types/AuthType";
+import { tokenService } from "../services/tokenService";
+import { authService } from "../services/authService";
 
 interface AuthProviderProps {
-    children: ReactNode
+  children: ReactNode;
 }
 
-const AuthContext = createContext<AuthContextData>({} as AuthContextData)
+export const AuthContext = createContext<AuthContextData | null>(null);
 
 export function AuthProvider({ children }: AuthProviderProps){
-    const [user, setUser] = useState<User | null>(null)
+    const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const token = localStorage.getItem('@PLataforma:token');
-
-        if (token) {
-            api.defaults.headers.Authorization = `Bearer ${token}`;
-
-            api.get('/users/me')
-                .then(response => {
-                    setUser(response.data);
-                })
-                .catch(() => {
-                    signOut();
-                });
-        }
+    const signOut = useCallback(() => {
+        tokenService.removeToken();
+        tokenService.removeApiAuthorization();
+        setUser(null);
     }, []);
 
-    async function signIn(email: string, password: string){
+    const loadAuthenticaredUser = useCallback(async () => {
+        const token = tokenService.getToken();
+
+        if (!token){
+            return;
+        }
+
         try {
-            const response = await api.post('/auth/login', {email, password});
-            const { access_token } = response.data;
+            tokenService.setApiAuthorization(token);
 
-            localStorage.setItem('@Plataforma:token', access_token);
-            api.defaults.headers.Authorization = `Bearer ${access_token}`;
+            const authenticatedUser = await authService.getAuthenticatedUser();
 
-            const userResponse = await api.get('/users/me');
-            setUser(userResponse.data);
+            setUser(authenticatedUser)
+        } catch {
+            signOut();
+        }
+    }, [signOut])
+
+    async function signIn(email: string, password: string): Promise<void> {
+        try {
+            const { access_token } = await authService.signIn(email, password);
+
+            tokenService.saveToken(access_token);
+            tokenService.setApiAuthorization(access_token);
+
+            const authemticatedUser = await authService.getAuthenticatedUser();
+
+            setUser(authemticatedUser);
         } catch (error) {
-            console.error("Erro ao fazer login", error);
+            console.error("Erro ao fazer login", error)
             throw error;
         }
     }
 
-    function signOut(){
-        localStorage.removeItem('@Plataforma:token');
-        delete api.defaults.headers.Authorization;
-        setUser(null);
-    }
+    useEffect(() => {
+        loadAuthenticaredUser();
+    }, [loadAuthenticaredUser])
 
     return (
-        <AuthContext.Provider value={{
-            user,
-            isAuthenticated: !!user,
-            signIn,
-            signOut
-        }}>
-          {children}
+        <AuthContext.Provider
+            value={{
+                user,
+                isAuthenticated: Boolean(user),
+                signIn,
+                signOut
+            }}>
+            { children }
         </AuthContext.Provider>
     );
-}
-
-export function useAuth(){
-    const contect = useContext(AuthContext);
-    return contect;
 }
