@@ -1,12 +1,17 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { AuthProvider } from './contexts/AuthContext'
+import { Login } from './pages/Login'
 
 function App() {
   return (
-    <div className='flex h-screen items-center justify-center bg-gray-100'>
-      <h1 className='text-3x1 font-bold text-blue-600'>
-        Configurado!
-      </h1>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path='/' element={<Login />}/>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 
