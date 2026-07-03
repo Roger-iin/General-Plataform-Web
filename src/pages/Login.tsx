@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { LabelLogin } from "../components/LabelLogin";
 import { InputLogin } from "../components/InputLogin";
+import { useNavigate } from "react-router-dom";
 
 
 export function Login() {
@@ -9,13 +10,14 @@ export function Login() {
     const [password, setPassword] = useState('');
 
     const { signIn } = useAuth();
+    const navigate = useNavigate();
 
     async function handleLogin(e: FormEvent) {
         e.preventDefault();
 
         try {
             await signIn(email, password)
-            alert('Logado com sucesso!')
+            navigate('/dashboard')
         } catch (error) {
             alert('Falha no login. Verifique suas credenciais')
         }
