@@ -36,6 +36,16 @@ export function AuthProvider({ children }: AuthProviderProps){
         }
     }, [signOut])
 
+    async function signUp(name: string, email: string, password: string): Promise<void> {
+        try {
+            await authService.signUp(name, email, password);
+            await signIn(email, password);
+        } catch (error) {
+            console.error("Erro ao criar conta", error)
+            throw error;
+        }
+    }
+
     async function signIn(email: string, password: string): Promise<void> {
         try {
             const { access_token } = await authService.signIn(email, password);
@@ -62,7 +72,8 @@ export function AuthProvider({ children }: AuthProviderProps){
                 user,
                 isAuthenticated: Boolean(user),
                 signIn,
-                signOut
+                signOut,
+                signUp
             }}>
             { children }
         </AuthContext.Provider>
