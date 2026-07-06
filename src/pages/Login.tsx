@@ -1,8 +1,8 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { LabelLogin } from "../components/LabelLogin";
 import { InputLogin } from "../components/InputLogin";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export function Login() {
@@ -12,7 +12,7 @@ export function Login() {
     const { signIn } = useAuth();
     const navigate = useNavigate();
 
-    async function handleLogin(e: FormEvent) {
+    async function handleLogin(e: SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
 
         try {
@@ -72,7 +72,7 @@ export function Login() {
 
                         <div className="text-center text-sm">
                             <p className="">
-                                Ainda não tem conta? <a href="" className="text-cyan-400">Criar conta</a>
+                                Ainda não tem conta? <Link to='/signup' className="text-cyan-400">Criar conta</Link>
                             </p>
                         </div>
                     </form>
