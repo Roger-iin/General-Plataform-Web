@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { Login } from './pages/Login'
 import { Dashboard } from './pages/Dashboard'
 import { PrivateRoute } from './components/PrivateRoute'
+import { SignUp } from './pages/SignUp'
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path='/' element={<Login />}/>
+          <Route path='/signup' element={<SignUp />}/>
           <Route 
             path="/dashboard"
             element={
