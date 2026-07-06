@@ -3,7 +3,8 @@ import './App.css'
 import { AuthProvider } from './contexts/AuthContext'
 import { Login } from './pages/Login'
 import { Dashboard } from './pages/Dashboard'
-import { PrivateRoute } from './components/PRivateRoute'
+import { PrivateRoute } from './components/PrivateRoute'
+
 
 function App() {
   return (
