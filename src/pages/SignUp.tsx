@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/useAuth";
 import { LabelLogin } from "../components/LabelLogin";
 import { InputLogin } from "../components/InputLogin";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 export function SignUp() {
@@ -19,8 +20,8 @@ export function SignUp() {
         try {
             await signUp(name, email, password)
             navigate('/dashboard')
-        } catch (error: any) {
-            if (error?.response?.status === 409) {
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 409) {
                 alert('Falha ao criar conta. E-mail já cadastrado.');
                 return;
             }
@@ -96,6 +97,4 @@ export function SignUp() {
             </div>
         </div>
     )
-
-
 }
