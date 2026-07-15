@@ -11,6 +11,7 @@ export const AuthContext = createContext<AuthContextData | null>(null);
 
 export function AuthProvider({ children }: AuthProviderProps){
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(() => Boolean(tokenService.getToken()));
 
     const signOut = useCallback(() => {
         tokenService.removeToken();
@@ -18,10 +19,11 @@ export function AuthProvider({ children }: AuthProviderProps){
         setUser(null);
     }, []);
 
-    const loadAuthenticaredUser = useCallback(async () => {
+    const loadAuthenticatedUser = useCallback(async () => {
         const token = tokenService.getToken();
 
         if (!token){
+            setIsLoading(false);
             return;
         }
 
@@ -33,6 +35,8 @@ export function AuthProvider({ children }: AuthProviderProps){
             setUser(authenticatedUser)
         } catch {
             signOut();
+        } finally {
+            setIsLoading(false);
         }
     }, [signOut])
 
@@ -53,23 +57,25 @@ export function AuthProvider({ children }: AuthProviderProps){
             tokenService.saveToken(access_token);
             tokenService.setApiAuthorization(access_token);
 
-            const authemticatedUser = await authService.getAuthenticatedUser();
+            const authenticatedUser = await authService.getAuthenticatedUser();
 
-            setUser(authemticatedUser);
+            setUser(authenticatedUser);
         } catch (error) {
+            signOut();
             console.error("Erro ao fazer login", error)
             throw error;
         }
     }
 
     useEffect(() => {
-        loadAuthenticaredUser();
-    }, [loadAuthenticaredUser])
+        void loadAuthenticatedUser();
+    }, [loadAuthenticatedUser])
 
     return (
         <AuthContext.Provider
             value={{
                 user,
+                isLoading,
                 isAuthenticated: Boolean(user),
                 signIn,
                 signOut,
