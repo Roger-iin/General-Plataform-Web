@@ -5,13 +5,14 @@ export interface User {
 
 export interface AuthContextData {
     user: User | null;
+    isLoading: boolean;
     isAuthenticated: boolean;
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => void;
     signUp: (name: string, email: string, password: string) => Promise<void>;
 }
 
-export interface signUpResponse{
+export interface SignUpResponse{
     id: string,
     name: string,
     email: string,
