@@ -18,7 +18,7 @@ export function Login() {
         try {
             await signIn(email, password)
             navigate('/dashboard')
-        } catch (error) {
+        } catch {
             alert('Falha no login. Verifique suas credenciais')
         }
     }
@@ -80,6 +80,4 @@ export function Login() {
             </div>
         </div>
     )
-
-
 }
