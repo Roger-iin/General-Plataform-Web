@@ -1,8 +1,8 @@
-import type { SignInResponse, signUpResponse, User } from "../types/AuthType";
+import type { SignInResponse, SignUpResponse, User } from "../types/AuthType";
 import { api } from "./api";
 
 export const authService = {
-    async signUp(name: string, email: string, password: string): Promise<signUpResponse>{
+    async signUp(name: string, email: string, password: string): Promise<SignUpResponse>{
         const response = await api.post("/users", {
             name, 
             email,
