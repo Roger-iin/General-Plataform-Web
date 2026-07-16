@@ -8,5 +8,5 @@ export function useAuth(){
         throw new Error("useAuth deve ser usado dentro de um AuthProvider.")
     }
 
-    return context
+    return context;
 }
