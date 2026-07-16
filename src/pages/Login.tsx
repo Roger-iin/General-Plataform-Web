@@ -16,7 +16,7 @@ export function Login() {
         e.preventDefault();
 
         try {
-            await signIn(email, password)
+            await signIn(email.toLowerCase(), password)
             navigate('/dashboard')
         } catch {
             alert('Falha no login. Verifique suas credenciais')

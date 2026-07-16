@@ -18,7 +18,7 @@ export function SignUp() {
         e.preventDefault();
 
         try {
-            await signUp(name, email, password)
+            await signUp(name, email.toLowerCase(), password)
             navigate('/dashboard')
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 409) {
