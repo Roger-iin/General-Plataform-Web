@@ -20,6 +20,10 @@ export const authService = {
         return response.data;
     },
 
+    async signOut(): Promise<void> {
+        await api.post('/auth/logout');
+    },
+
     async getAuthenticatedUser(): Promise<User>{
         const response = await api.get<User>("/users/me")
 

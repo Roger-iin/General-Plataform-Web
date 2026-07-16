@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import type { User } from "../types/AuthType";
-import { tokenService } from "../services/tokenService";
 import { authService } from "../services/authService";
 import { AuthContext } from "./AuthContext";
 
@@ -10,34 +9,27 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps){
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(() => Boolean(tokenService.getToken()));
+    const [isLoading, setIsLoading] = useState(true);
 
-    const signOut = useCallback(() => {
-        tokenService.removeToken();
-        tokenService.removeApiAuthorization();
-        setUser(null);
+    const signOut = useCallback(async () => {
+        try {
+            await authService.signOut();
+        } finally {
+            setUser(null);
+        }
     }, []);
 
     const loadAuthenticatedUser = useCallback(async () => {
-        const token = tokenService.getToken();
-
-        if (!token){
-            setIsLoading(false);
-            return;
-        }
-
         try {
-            tokenService.setApiAuthorization(token);
-
             const authenticatedUser = await authService.getAuthenticatedUser();
 
             setUser(authenticatedUser)
         } catch {
-            signOut();
+            setUser(null);
         } finally {
             setIsLoading(false);
         }
-    }, [signOut])
+    }, [])
 
     async function signUp(name: string, email: string, password: string): Promise<void> {
         try {
@@ -51,16 +43,13 @@ export function AuthProvider({ children }: AuthProviderProps){
 
     async function signIn(email: string, password: string): Promise<void> {
         try {
-            const { access_token } = await authService.signIn(email, password);
-
-            tokenService.saveToken(access_token);
-            tokenService.setApiAuthorization(access_token);
+            await authService.signIn(email, password);
 
             const authenticatedUser = await authService.getAuthenticatedUser();
 
             setUser(authenticatedUser);
         } catch (error) {
-            signOut();
+            setUser(null);
             console.error("Erro ao fazer login", error)
             throw error;
         }

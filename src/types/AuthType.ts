@@ -8,7 +8,7 @@ export interface AuthContextData {
     isLoading: boolean;
     isAuthenticated: boolean;
     signIn: (email: string, password: string) => Promise<void>;
-    signOut: () => void;
+    signOut: () => Promise<void>;
     signUp: (name: string, email: string, password: string) => Promise<void>;
 }
 
@@ -21,5 +21,5 @@ export interface SignUpResponse{
 }
 
 export interface SignInResponse {
-    access_token: string;
+    authenticated: boolean;
 }
